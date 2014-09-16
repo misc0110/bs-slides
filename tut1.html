@@ -1,0 +1,192 @@
+<!--
+Google IO 2012/2013 HTML5 Slide Template
+
+Authors: Eric Bidelman <ebidel@gmail.com>
+         Luke Mahé <lukem@google.com>
+
+URL: https://code.google.com/p/io-2012-slides
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tutorium #1</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+    <aside class="gdbar"><img src="images/sweb.jpg"></aside>
+    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+    </hgroup>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Booting SWEB</h2>
+    </hgroup>
+  </slide>
+  
+  
+  <slide>
+    <hgroup>
+      <h2>Booting</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Grub Bootloader</li>
+        <li>boot.s, Paging, call startup (main.cpp:77)</li>
+      </ul>
+      <pre class="prettyprint" data-lang="main.cpp: 182ff">
+char const * user_progs [ ] = { 
+  "/user_progs/helloworld.sweb", 
+  0 
+};
+Scheduler::instance()->addNewThread(
+  new MountMinixAndStartUserProgramsThread(
+    new FileSystemInfo(*root_fs_info), user_progs)
+);
+// [ ... ]
+ArchInterrupts::enableInterrupts();
+Scheduler::instance()->yield();
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>MountMinix</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>a kernel thread that just runs in kernel space</li>
+        <li>mounts the minix partition</li>
+        <li>loads and executes the user programs</li>
+        <li>waits until the last user program has finished...</li>
+        <li>...and unmounts the minix partition</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>UserProcess</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>derived from <code>Thread</code></li>
+        <li>executes code of binary</li>
+        <li>has a virtual address space (<code>Loader</code>)</li>
+        <li>runs in user space</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Loader</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>creates address space for <code>UserProcess</code></li>
+        <li>loads the executable code (ELF32 format)</li>
+        <li>constructor loads only the file header</li>
+        <li>the actual code is loaded on demand<br /><br />
+<pre class="prettyprint" data-lang="Loader.cpp: 351ff">
+
+void Loader::loadOnePageSafeButSlow(uint32_t virtual_address);
+
+</pre>
+        </li>
+      </ul>
+    </article>
+  </slide>
+
+  
+  <slide>
+    <hgroup>
+      <h2>Timer-Interrupt</h2>
+    </hgroup>
+    <article  class="smaller">
+      <p>Interrupts are handled in <code>InterruptUtils</code>. Example:</p>
+      <ul class="build">
+        <li>Timer/Clock interrupt(IRQ0)
+        <ul>
+          <li>requests interrupt after a given time span</li>
+        </ul>
+
+<pre class="prettyprint" data-lang="InterruptUtils::irqHandler_0()">
+...
+heart_beat_value = (heart_beat_value + 1) % 4;
+Scheduler::instance()->incTicks();
+uint32 ret = Scheduler::instance()->schedule();
+switch (ret)
+{
+  case 0:
+    ArchInterrupts::EndOfInterrupt(0);
+    arch_switchThreadKernelToKernelPageDirChange();
+  case 1:
+    ArchInterrupts::EndOfInterrupt(0);
+    arch_switchThreadToUserPageDirChange();
+...
+</pre>
+        </li>
+      </ul>
+    </article>
+  </slide>  
+
+  <slide>
+    <hgroup>
+      <h2>Page Fault Handler</h2>
+    </hgroup>
+    <article>
+      <p>Accessing a memory location that cannot be resolved &rarr; Page fault. Has to be handled correctly:</p>
+      <ul class="build">
+        <li>Loading code from binary</li>
+        <li>terminating process due to access violation</li>
+        <li>...</li>
+      </ul>
+    </article>
+  </slide>
+  
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Running SWEB</h2>
+    </hgroup>
+  </slide>  
+  
+  <slide class="thank-you-slide segue nobackground">
+    <aside class="gdbar right"><img src="images/sweb.jpg"></aside>
+    <article class="flexbox vleft auto-fadein">
+      <h2>&lt;Thank You!&gt;</h2>
+    </article>
+    <p class="auto-fadein" data-config-contact>
+      <!-- populated from slide_config.json -->
+    </p>
+  </slide>
+  
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>
