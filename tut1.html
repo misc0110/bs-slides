@@ -36,6 +36,28 @@ URL: https://code.google.com/p/io-2012-slides
     </hgroup>
   </slide>
 
+  
+  <slide>
+    <hgroup>
+      <h2>Communication</h2>
+     </hgroup>
+     <article>
+      <p>Communication with team</p>
+      <ul>
+        <li>meetings</li>
+        <li>e-Mail</li>
+        <li>chat</li>
+      </ul>
+      <p>Communikation with others</p>
+      <ul>
+        <li>Newsgroup: <code>tu-graz.lv.bs.sweb</code></li>
+        <li>Helpline: <a href="mailto:bs-helpline@iaik.tugraz.at">bs-helpline@iaik.tugraz.at</a></li>
+        <li>IRC-Channel: <a href="irc://irc.at.euirc.net/bs">irc://irc.at.euirc.net/bs</a></li>
+
+      </ul>
+     </article>
+  </slide>
+  
   <slide class="segue dark nobackground">
     <hgroup class="auto-fadein">
       <h2>Booting SWEB</h2>
@@ -50,13 +72,15 @@ URL: https://code.google.com/p/io-2012-slides
     <article>
       <ul>
         <li>Grub Bootloader</li>
-        <li>boot.s, Paging, call startup (main.cpp:77)</li>
+        <li>boot.s, Paging, call startup (main.cpp:66)</li>
       </ul>
-      <pre class="prettyprint" data-lang="main.cpp: 182ff">
+      <pre class="prettyprint" data-lang="user_progs.h">
 char const * user_progs [ ] = { 
   "/user_progs/helloworld.sweb", 
   0 
 };
+      </pre>
+      <pre class="prettyprint" data-lang="main.cpp: 158ff">
 Scheduler::instance()->addNewThread(
   new MountMinixAndStartUserProgramsThread(
     new FileSystemInfo(*root_fs_info), user_progs)
@@ -91,7 +115,7 @@ Scheduler::instance()->yield();
       <ul class="build">
         <li>derived from <code>Thread</code></li>
         <li>executes code of binary</li>
-        <li>has a virtual address space (<code>Loader</code>)</li>
+        <li>has a virtual address space (<code>Loader</code> and <code>ArchMemory</code>)</li>
         <li>runs in user space</li>
       </ul>
     </article>
@@ -107,9 +131,9 @@ Scheduler::instance()->yield();
         <li>loads the executable code (ELF32 format)</li>
         <li>constructor loads only the file header</li>
         <li>the actual code is loaded on demand<br /><br />
-<pre class="prettyprint" data-lang="Loader.cpp: 351ff">
+<pre class="prettyprint" data-lang="Loader.cpp: 108ff">
 
-void Loader::loadOnePageSafeButSlow(uint32_t virtual_address);
+void Loader::loadOnePageSafeButSlow(pointer virtual_address);
 
 </pre>
         </li>
@@ -164,16 +188,396 @@ switch (ret)
     </article>
   </slide>
   
+  
   <slide class="segue dark nobackground">
     <hgroup class="auto-fadein">
       <h2>Running SWEB</h2>
     </hgroup>
   </slide>  
+
+  <slide>
+    <hgroup>
+      <h2>Scheduler</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>has list containing all threads</li>
+        <li>executes <code>schedule()</code> at irq 0, next thread is scheduled</li>
+        <li><code>yield()</code> &rarr; irq 65 &rarr; <code>schedule()</code></li>
+        <li>method to add a new thread to the thread list
+<pre class="prettyprint">
+Scheduler::addThread( Thread *thread );
+</pre></li>
+        <li>contains the <code>IdleThread</code>, removes dead threads</li>
+      </ul>
+    </article>
+  </slide>
+
+
+  <slide>
+    <hgroup>
+      <h2>Process startup</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Process object is created</li>
+        <li>Stack and <code>ArchThreadInfo</code> for user- and kernel space are allocated</li>
+        <li>Loader loads executable</li>
+        <li>Entrypoint is retrieved from ELF-header</li>
+        <li>Instruction Pointer for user space is set to entry point</li>
+        <li><code>switch_to_userspace_ = 1</code></li>
+      </ul>
+    </article>
+  </slide>  
+
+<slide>
+<hgroup><h2>Process execution</h2></hgroup><article>
+<p>When process (resp. thread) is scheduled:</p>
+<ul>
+<li> Check <code>switch_to_userspace_</code> (always 1 at process start)</li>
+<li> Load register values from <code>ArchThreadInfo</code></li>
+<li> thus EIP is set to the entry point</li>
+<li> CPU executes the code at this location</li>
+</ul>
+</article></slide>
+
+<slide>
+<hgroup><h2>Entry point: userspace/libc/src/nonstd.c</h2></hgroup><article>
+<pre class="prettyprint" data-lang="nonstd.c:29-32">
+void _start() 
+{
+  exit(main());
+}
+</pre>
+</article></slide>
+
+<slide><hgroup><h2>Execution of <code>helloworld</code></h2></hgroup>
+<article>
+<pre class="prettyprint" data-lang="userspace/tests/helloworld.c">
+#include &lt;stdio.h>
+int main()
+{
+  puts("hello, world");
+  return 0;
+}
+</pre>
+
+<ul>
+<li> Off-the-shelf Hello World Programm </li>
+<li> Brian Kernigham, 1974</li>
+</ul>
+
+</article></slide>
+
+
+<slide><hgroup><h2>Execution of <code>helloworld</code></h2></hgroup>
+<article>
+<pre class="prettyprint" data-lang="userspace/libc/printf.c:510">
+int puts(const char *output_string)
+{
+  ...
+  characters_written = write(STDOUT_FILENO, 
+                             (void*) output_string,
+                             string_length);
+  ...
+}
+</pre>
+
+<ul>
+<li> Library funcktion</li>
+<li> Sanity check of argument</li>
+<li> Issues systemcall <code>write</code></li>
+</ul>
+
+</article></slide>
+
+<slide><hgroup><h2>Execution of <code>helloworld</code></h2></hgroup>
+<article>
+<pre class="prettyprint" data-lang="userspace/libc/write.c:61">
+size_t write(int file_descriptor, const void *buffer, 
+             size_t count)
+{
+  return __syscall(sc_write, file_descriptor, (long) buffer, 
+                   count, 0x00, 0x00);
+}
+</pre>
+
+<ul>
+<li> Library part of syscall</li>
+<li> Calls low-level part <code>__syscall</code></li>
+</ul>
+
+</article></slide>
+
+
+<slide><hgroup><h2>Execution of <code>helloworld</code></h2></hgroup>
+<article>
+<pre class="prettyprint" data-lang="arch/x86/32/userspace/syscalls.s:7">
+__syscall:
+  ; setup stack
+  ...
+  ; ok, we have to save ALL registers we are now going to
+  ; overwrite for our syscall
+  ...
+  int 0x80;
+  ...
+  ret
+</pre>
+
+<ul>
+<li> Copies arguments to registers (<code>eax</code>, <code>ebx</code>, ...)</li>
+<li> Issues CPU-interrupt 0x80 (= 128<sub>10</sub>)</li> <!-- TODO: fix sub -->
+<li> &rarr; Switch to kernel space</li>
+</ul>
+
+</article></slide>
+
+<slide><hgroup><h2>Userspace/Kernelspace</h2></hgroup>
+  <article>
+  <p> Source <p>
+    <ul>
+    <li> Userspace: <code>userspace/</code></li>
+    <li> Kernelspace (architecture independent): <code>common/</code></li>
+      <ul>
+      <li> <code>Scheduler</code>, <code>UserProcess</code>, etc.</li>
+      </ul>
+     <li>Kernelspace (architecture dependent): <code>arch/</code></li>
+     <ul>
+       <li>x86 (default)</li>
+       <li>ARM (more infos at a special tutorium, tba)</li>
+       <li>You can delete architectures you don't need - but bonus points if you don't and they still work</li>
+     </ul>
+  </ul>
+ </article>
+</slide>
+
+<slide><hgroup><h2>Userspace/Kernelspace</h2></hgroup>
+<article>
+  <p>On execution: different contexts (x86/32)</p>
+    <ul>
+    <li> CPU-register (<code>eax</code>, ...)</li>
+    <li> Stack (<code>esp</code>, <code>ebp</code>)</li>
+    <li> Memory (Page Directory, <code>cr3</code>)</li>
+      <ul>
+      <li> Kernel and Userspace share memorylayout</li>
+      <li> but: different access rights</li>
+      </ul>
+    <li> <code>ThreadInfosUserspaceThread</code>, <code>ThreadInfosKernelThread</code></li>
+       (in <code>arch/x86/32/common/include/ArchThreads.h</code>)
+    </ul>
+  </ul>
+</article></slide>
+
+<slide><hgroup><h2>Definition of syscalls</h2></hgroup>
+<article>
+  <ul>
+  <li> <code>arch/x86/32/source/arch_interrupts.s</code></li>
+    <ul>
+    <li> Entrypoint to kernel</li>
+    <li> Stores user context</li>
+    <li> Calls <code>syscallHandler</code> (low-level)</li>
+    </ul>
+  </ul>
+
+<pre class="prettyprint" data-lang="arch/x86/32/source/InterruptUtils.cpp:417">
+
+extern "C" void syscallHandler()
+{
+  currentThread->user_arch_thread_info_->eax =
+    Syscall::syscallException(currentThread->
+      user_arch_thread_info_->eax, ... );
+  ...
+}
+</pre>
+</article></slide>
+
+<slide><hgroup><h2>Syscalls in kernel</h2></hgroup><article>
+<pre class="prettyprint" data-lang="common/source/kernel/Syscall.cpp:19">
+
+size_t Syscall::syscallException(size_t syscall_number, size_t arg1, ...
+{
+  ...
+  switch (syscall_number)
+  {
+    ...
+    case sc_write:
+      return_value = write(arg1,arg2,arg3);
+      break;
+    ...
+  }
+  return return_value;
+}
+</pre>
+
+<ul>
+<li> High-level</li>
+<li> Dispatch for all Syscalls </li>
+</ul>
+
+</article></slide>
+
+<slide><hgroup><h2>Definition of syscalls</h2></hgroup>
+  <article>
+  <ul>
+  <li> <b>TODO:</b></li>
+  <ol>
+    <li> Add new syscall number to <code>common/include/kernel/syscall-definition.h</code> </li>
+    <li> Write syscall library function</li>
+    <li> Add syscall handler to <code>Syscall::syscallException</code></li>
+  </ol>
+  </ul>
+</article></slide>
+
+<slide><hgroup><h2><code>Syscall::write</code></h2></hgroup><article>
+<pre class="prettyprint" data-lang="common/source/kernel/Syscall.cpp:62">
+
+// sanity checks
+if ((buffer >= 2U*1024U*1024U*1024U) ||
+   (buffer+size > 2U*1024U*1024U*1024U))
+{
+  return -1U;
+}
+
+if (fd == fd_stdout) //stdout
+{
+  debug(SYSCALL,"Syscall::write: %B\n",(char*) buffer,size);
+  kprint_buffer((char*)buffer,size);
+}
+return size;
+</pre>
+</article></slide>
+
+
+<slide><hgroup><h2><code>debug( size_t flag, const char *fmt, ...)</code></h2></hgroup>
+<article>
+  <ul>
+    <li> writes to the commandline from where qemu is run</li>
+    <li> flags are in <code>common/include/console/debug.h</code></li>
+<pre class="prettyprint">
+const size_t SYSCALL = 0x00080008 | OUTPUT_ENABLED;
+</pre>
+    <li>Add new flags for new classes</li>
+    <li> Tags and colors can be configured in <code>common/source/console/kprintf.cpp:410ff</code></li>
+    <li> <code>NO_COLOR</code> disables color output.</li>
+  </ul>
+  
+</article></slide>
+<slide><hgroup><h2><code>kprint_buffer</code>, <code>kprintf</code> and Co</h2></hgroup>
+  <article>
+  <ul>
+    <li> <code>kprint_buffer</code>, <code>kprintf</code>, writes un-/formatted to Sweb-Terminal</li>
+    <li> <code>kprintd_buffer</code>, <code>kprintfd</code> writes un-/formatted to debug-console</li>
+    <li> For debug output better use <code>debug</code>!</li>
+  </ul>
+  
+</article></slide>
+
+<slide>
+<hgroup><h2>Process termination</h2></hgroup><article>
+<pre class="prettyprint" data-lang="userspace/tests/helloworld.c">
+#include &lt;stdio.h>
+int main()
+{
+  puts("hello, world");
+  return 0;
+}</pre>
+<ul>
+<li> What does <code>return 0</code> respectively end of function do? Nothing special...</li>
+</ul>
+</article></slide>
+
+<slide>
+<hgroup><h2>Process termination (2)</h2></hgroup><article>
+<pre class="prettyprint" data-lang="nonstd.c:29-32">
+void _start() 
+{
+  exit(main());
+}
+</pre>
+</article></slide>
+
+<slide>
+<hgroup><h2>Process termination (3)</h2></hgroup><article>
+<pre class="prettyprint" data-lang="common/source/kernel/Syscall.cpp (Fragments regarding exit)">
+
+size_t Syscall::syscallException(size_t syscall_number, ...
+{
+  ...
+    case sc_exit:
+      exit(arg1);
+      break;
+  ...
+}
+
+void Syscall::exit(size_t exit_code)
+{
+  currentThread->kill();
+}</pre>
+</article></slide>
+
+<slide>
+<hgroup><h2>Process termination (4)</h2></hgroup><article>
+<pre class="prettyprint" data-lang="common/source/kernel/Thread.cpp:90 ff.">
+void Thread::kill()
+{
+  switch_to_userspace_ = false;
+  state_=ToBeDestroyed;
+  if ( currentThread == this )
+  {
+    ArchInterrupts::enableInterrupts();
+    Scheduler::instance()->yield();
+  }
+}</pre>
+</article></slide>
+
+
+<slide>
+<hgroup><h2>Process termination (5)</h2></hgroup><article>
+<p>Scheduler calls <code>delete</code> if status is <code>ToBeDestroyed</code></p>
+<pre class="prettyprint" data-lang="UserProcess/Thread Destruktor">
+UserProcess::~UserProcess() {
+  if(fd_ > 0) { vfs_syscall.close(fd_); }
+  process_registry_->processExit();
+}
+Thread::~Thread() {
+  if (loader_) { delete loader_; }
+  ArchThreads::cleanupThreadInfos(
+                 user_arch_thread_info_);
+  ArchThreads::cleanupThreadInfos(
+                 kernel_arch_thread_info_);
+  if ( working_dir_ ) { delete working_dir_; }
+}</pre>
+</article></slide>
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Help</h2>
+    </hgroup>
+  </slide>  
+
+<slide>
+<hgroup><h2>SWEBWiki</h2></hgroup><article>
+<ul>
+<li> <a href="https://swebwiki.student.iaik.tugraz.at/">https://swebwiki.student.iaik.tugraz.at/</a></li>
+<li> Many tutorials and infos about SWEB</li>
+<li> is continuously extended </li>
+</ul>
+</article></slide>
+
+<slide>
+<hgroup><h2>Live Programming</h2></hgroup><article>
+<ul>
+<li> Live Programming TBA</li>
+<li> Good evaluation, seems to be sensible</li>
+<li> We implement a syscall</li>
+</ul>
+</article></slide>
+
   
   <slide class="thank-you-slide segue nobackground">
     <aside class="gdbar right"><img src="images/sweb.jpg"></aside>
     <article class="flexbox vleft auto-fadein">
-      <h2>&lt;Thank You!&gt;</h2>
+      <h2>Questions?</h2>
     </article>
     <p class="auto-fadein" data-config-contact>
       <!-- populated from slide_config.json -->
