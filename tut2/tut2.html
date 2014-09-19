@@ -1,0 +1,1366 @@
+<!--
+Google IO 2012/2013 HTML5 Slide Template
+
+Authors: Eric Bidelman <ebidel@gmail.com>
+         Luke Mahé <lukem@google.com>
+
+URL: https://code.google.com/p/io-2012-slides
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tutorium #2</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="all" href="theme/css/tugraz.css">
+  <link rel="stylesheet" media="all" href="css/code_animator.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+  <script src="js/code_animator.js"></script>
+</head>
+<body style="opacity: 0" onload="animateCode();">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+    <aside class="gdbar"><img src="images/sweb.jpg"></aside>
+    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+    </hgroup>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Multiprogramming in SWEB (Wiederholung)</h2>
+      <h3>Memorymanagement</h3>
+    </hgroup>
+  </slide>
+
+<slide>
+        <hgroup><h2>Address Space Layout in SWEB</h2></hgroup><article>
+
+        <ul>
+                <li> Jeder Prozess erh&auml;lt eigenen Adressraum</li>
+                <li> 0 - 2 GiB Programm</li>
+                <li> 2 - 3 GiB Kernel (f&uuml;r alle Prozesse gleich)</li>
+                <li> 3 - 4 GiB Identity-Mapped</li>
+        </ul>
+
+        <img src="images/speichern.png" />
+</article></slide>
+
+<slide>
+  <hgroup><h2>Page Directories</h2></hgroup><article>
+  <ul>
+    <li> Jeder Prozess (und Kernel-Thread) hat ein Page Directory</li>
+    <li> Wird ben&ouml;tigt, um den virtuellen Adressraum (4 GB) auf den physikalischen abzubilden</li>
+    <li> Bei System-Calls wird in den Kernel-Bereich gesprungen, Page Directory bleibt gleich</li>
+    <li> Identity-Mapping, um geordnet auf physikalische Adressen zugreifen zu k&ouml;nnen</li>
+  </ul>
+  
+  &rarr; Tafel: Wie funktioniert Adressaufl&ouml;sung mit Page Directory und Page Tables?
+</article></slide>
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Multiprogramming in SWEB (Wiederholung)</h2>
+      <h3>Prozesse und Threads</h3>
+    </hgroup>
+  </slide>
+
+  <slide>
+   <article>
+   <hgroup>
+    <h2>Thread Objects Overview</h2>
+   </hgroup>
+    <img src="images/thread_objects.svg" height="90%"/>
+   </article>
+  </slide>
+
+<slide>
+        <hgroup><h2>Prozesse</h2></hgroup><article>
+
+        <ul>
+                <li> Abstrakte Klasse <code>Thread</code></li>
+                <li> davon abgeleitete Klasse <code>UserProcess</code> (...Multithreading?)</li>
+                        <ul>
+                                <li> nur beispielhafte Implementation</li>
+                                <li> instanziert <code>Loader</code></li>
+                                <li> switcht in <code>Run()</code> in den Userspace</li>
+                        </ul>
+                <li> <code>Thread</code> h&auml;lt <code>Loader</code>-Objekt (...Multithreading?)</li>
+                <li> Klasse <code>Loader</code></li>
+                        <ul>
+                                <li> initialisiert virtuellen Adressraum (Page- Directory und Stack)</li>
+                                <li> Page Fault &rarr; l&auml;dt Seite aus dem Executable nach</li>
+                                <li> <code>cleanupUserspaceAddressSpace(...)</code> r&auml;umt Page- Directory wieder auf</li>
+                        </ul>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Threads</h2></hgroup><article>
+
+        <ul>
+                <li> <code>Thread</code>-Objekte &rarr; "schedulbare'' Basiseinheit</li>
+                <li> (Derzeit) drei m&ouml;gliche Zust&auml;nde</li>
+                        <ul>
+                                <li> <code>Running</code>: ausf&uuml;hrbar bzw. wird gerade ausgef&uuml;hrt</li>
+                                <li> <code>Sleeping</code>: Thread blockiert/schl&auml;ft.</li>
+                                <li> <code>ToBeDestroyed</code>: Thread wurde beendet und wird zerst&ouml;rt (von <code>IdleThread</code>)</li>
+                                <li> ausreichend? (&rarr; Stichwort Systemcall <code>sleep</code>)</li>
+                        </ul>
+                <li> <code>UserThread</code>s f&uuml;r User-Prozesse m&uuml;ssen auch von <code>Thread</code> abgeleitet werden</li>
+        </ul>
+</article></slide>
+
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Multiprogramming in SWEB (Wiederholung)</h2>
+      <h3>Erstellen von Prozessen</h3>
+    </hgroup>
+  </slide>
+
+<slide>
+        <hgroup><h2>Erstellen eines User-Prozesses in SWEB</h2></hgroup><article>
+
+        <ul>
+                <li> <code>userspace/tests/example.c</code></li>
+                <li> HDD Image: <code>/user_progs/example.sweb</code></li>
+                <li> in <code>main.cpp:startup()</code> zu <code>user_progs[]</code> hinzuf&uuml;gen</li>
+                <li> <code>cmake . &amp;&amp; make</code></li>
+        </ul>
+</article></slide>
+
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Multiprogramming in SWEB (Wiederholung)</h2>
+      <h3>Funktionsaufruf</h3>
+    </hgroup>
+  </slide>
+
+  <slide>
+        <hgroup><h2>Funktionsaufruf im Detail (<code>cdecl</code>)</h2></hgroup><article>
+
+        <ul>
+                <li> Aufrufer</li>
+                        <ul>
+                                <li> Legt Argumente auf den Stack (<code>push</code> bzw. <code>mov</code>)</li>
+                                <li> Ruft Funktion auf (<code>call</code>)</li>
+                        </ul>
+                <li> CPU legt R&uuml;cksprungadresse auf den Stack</li>
+                <li> Kontrollfluss wird an Funktion &uuml;bergeben (<code>EIP</code>- Register wird manipuliert)</li>
+                <li> Funktion</li>
+                        <ul>
+                                <li> Arbeitet Code ab</li>
+                                <li> Legt R&uuml;ckgabewert ins <code>EAX</code>- Register</li>
+                                <li> F&uuml;hrt <code>ret</code>- Instruction aus</li>
+                        </ul>
+                <li> CPU nimmt R&uuml;cksprungadresse vom Stack</li>
+                <li> Kontrollfluss zur&uuml;ck an den Aufrufer (erneut <code>EIP</code>- Register)</li>
+                <li> Aufrufer r&auml;umt Stack auf</li>
+        </ul>
+</article></slide>
+
+
+<slide>
+        <article>
+      <h3>C Programm</h3>
+      <pre class="prettyprint" data-lang="C">
+int add(int a, int b)
+{
+  return a + b;   
+}
+
+int main() 
+{
+  int a = 7;
+  int b = 14;
+  int c = 0;
+  
+  c = add(a, b);
+  
+  return c;
+}</pre>
+    <ul><li>Einfaches Programm, das zwei Zahlen (7 und 14) in einer Funktion addiert und zur&uuml;ck liefert.</li></ul>
+    </article>
+  </slide>
+    
+    
+  <slide>
+    <article>
+        <h3>Bereinigtes Assembler Programm (<span class="src">gcc -S -m32</span>)</h3>
+<pre style="line-height: 1.1em;" class="prettyprint" data-lang="ASM">
+add:
+        pushl   %ebp
+        movl    %esp, %ebp
+        movl    12(%ebp), %eax
+        movl    8(%ebp), %edx
+        addl    %edx, %eax
+        popl    %ebp
+        ret
+
+main:
+        pushl   %ebp
+        movl    %esp, %ebp
+        subl    $24, %esp
+        movl    $7, -12(%ebp)
+        movl    $14, -8(%ebp)
+        movl    $0, -4(%ebp)
+        movl    -8(%ebp), %eax
+        movl    %eax, 4(%esp)
+        movl    -12(%ebp), %eax
+        movl    %eax, (%esp)
+        call    add
+        movl    %eax, -4(%ebp)
+        movl    -4(%ebp), %eax
+        leave</pre>
+    </article>
+  </slide>
+    
+ <slide>
+      <article>
+    <h3>Debug</h3>
+    <div class="codeAnimator">
+<table class="ptr_table_format"><tr><td style="vertical-align: top;">
+
+<div class="code">
+ add:
+c        pushl   %ebp
+d        movl    %esp, %ebp
+e        movl    12(%ebp), %eax
+f        movl    8(%ebp), %edx
+g        addl    %edx, %eax
+h        popl    %ebp
+i        ret
+
+ main:
+1        pushl   %ebp
+2        movl    %esp, %ebp
+3        subl    $24, %esp
+4        movl    $7, -12(%ebp)
+5        movl    $14, -8(%ebp)
+6        movl    $0, -4(%ebp)
+7        movl    -8(%ebp), %eax
+8        movl    %eax, 4(%esp)
+9        movl    -12(%ebp), %eax
+a        movl    %eax, (%esp)
+b        call    add
+j        movl    %eax, -4(%ebp)
+k        movl    -4(%ebp), %eax
+l        leave
+</div>
+
+</td><td style="vertical-align: top;">
+
+<div class="code_1">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td></td></tr>
+<tr><th>0xffec</th><td></td></tr>
+<tr><th>0xffe8</th><td></td></tr>
+<tr><th>0xffe4</th><td></td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+</div>
+
+<div class="code_2">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; ESP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td></td></tr>
+<tr><th>0xffe8</th><td></td></tr>
+<tr><th>0xffe4</th><td></td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> ??</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> ??</td>
+<th>esp</th><td> 0xfff0</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_3">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small><small class="ptr">&#8592; ESP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td></td></tr>
+<tr><th>0xffe8</th><td></td></tr>
+<tr><th>0xffe4</th><td></td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> ??</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xfff0</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_4">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td></td></tr>
+<tr><th>0xffe8</th><td></td></tr>
+<tr><th>0xffe4</th><td></td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> ??</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_5">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td></td></tr>
+<tr><th>0xffe8</th><td></td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> ??</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_6">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td></td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> ??</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_7">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> ??</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_8">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td></td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 14</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_9">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 14</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_a">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small></td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 7</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_b">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small>7</td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 7</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_c">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td>7</td></tr>
+<tr><th>0xffd4</th><td><small class="ptr">&#8592; ESP</small>&lt;return address></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 7</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd4</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_d">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td>7</td></tr>
+<tr><th>0xffd4</th><td>&lt;return address></td></tr>
+<tr><th>0xffd0</th><td><small class="ptr">&#8592; ESP</small>&lt;ebp main></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 7</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd0</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_e">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td>7</td></tr>
+<tr><th>0xffd4</th><td>&lt;return address></td></tr>
+<tr><th>0xffd0</th><td><small class="ptr">&#8592; EBP</small><small class="ptr">&#8592; ESP</small>&lt;ebp main></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 7</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xffd0</td>
+<th>esp</th><td> 0xffd0</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_f">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td>7</td></tr>
+<tr><th>0xffd4</th><td>&lt;return address></td></tr>
+<tr><th>0xffd0</th><td><small class="ptr">&#8592; EBP</small><small class="ptr">&#8592; ESP</small>&lt;ebp main></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 14</td>
+<th>edx</th><td> ??</td>
+</tr>
+<tr><th>ebp</th><td> 0xffd0</td>
+<th>esp</th><td> 0xffd0</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_g">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td>7</td></tr>
+<tr><th>0xffd4</th><td>&lt;return address></td></tr>
+<tr><th>0xffd0</th><td><small class="ptr">&#8592; EBP</small><small class="ptr">&#8592; ESP</small>&lt;ebp main></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 14</td>
+<th>edx</th><td> 7</td>
+</tr>
+<tr><th>ebp</th><td> 0xffd0</td>
+<th>esp</th><td> 0xffd0</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_h">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td>7</td></tr>
+<tr><th>0xffd4</th><td>&lt;return address></td></tr>
+<tr><th>0xffd0</th><td><small class="ptr">&#8592; EBP</small><small class="ptr">&#8592; ESP</small>&lt;ebp main></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 21</td>
+<th>edx</th><td> 7</td>
+</tr>
+<tr><th>ebp</th><td> 0xffd0</td>
+<th>esp</th><td> 0xffd0</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_i">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td>7</td></tr>
+<tr><th>0xffd4</th><td><small class="ptr">&#8592; ESP</small>&lt;return address></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 21</td>
+<th>edx</th><td> 7</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_j">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>0</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small>7</td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 21</td>
+<th>edx</th><td> 7</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+
+<div class="code_k">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>21</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small>7</td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 21</td>
+<th>edx</th><td> 7</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+</div>
+
+<div class="code_l">
+<table class="ptr_table">
+<tr><th>0xfff0</th><td><small class="ptr">&#8592; EBP</small>&lt;ebp></td></tr>
+<tr><th>0xffec</th><td>21</td></tr>
+<tr><th>0xffe8</th><td>14</td></tr>
+<tr><th>0xffe4</th><td>7</td></tr>
+<tr><th>0xffe0</th><td></td></tr>
+<tr><th>0xffdc</th><td>14</td></tr>
+<tr><th>0xffd8</th><td><small class="ptr">&#8592; ESP</small>7</td></tr>
+<tr><th>0xffd4</th><td></td></tr>
+<tr><th>0xffd0</th><td></td></tr>
+</table>
+<table class="reg_table">
+<tr><th>eax</th><td> 21</td>
+<th>edx</th><td> 7</td>
+</tr>
+<tr><th>ebp</th><td> 0xfff0</td>
+<th>esp</th><td> 0xffd8</td>
+</tr>
+</table>
+
+</div>
+</td></tr></table>
+
+
+
+    </article>
+</slide> 
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Multiprogramming in SWEB (Wiederholung)</h2>
+      <h3>Syscalls</h3>
+    </hgroup>
+  </slide>
+
+  <slide>
+        <hgroup><h2>System Calls im Kernel</h2></hgroup><article>
+
+        <ul>
+                <li> Userspace: <code>__syscall(...)</code></li>
+                <li> Argumente und Syscallnummer in die Register (<code>EAX</code>, <code>EBX</code> ...)</li>
+                <li> Syscallnummern in <code>common/include/kernel/syscall-definitions.h</code></li>
+                <li> Sprung zum Kernel: IRQ 0x80</li>
+                <li> Kernel: <code>Syscall::syscallException(...)</code></li>
+        </ul>
+<pre class="prettyprint">
+switch(syscall_number) {
+        case sc_exit:
+                exit(arg1);
+                break;
+        /* ... */
+}
+</pre>
+</article></slide>
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Multiprogramming in SWEB (Wiederholung)</h2>
+      <h3>Synchronisations-Mechanismen</h3>
+    </hgroup>
+  </slide>
+
+<slide>
+        <hgroup><h2>Prozesssynchronisation</h2></hgroup><article>
+
+        <ul>
+                <li> Problem:</li>
+                        <ul>
+                                <li> Mehrere Threads oder Prozesse teilen sich bestimmte Ressourcen</li>
+                                <li> Durch unkoordinierten Zugriff k&ouml;nnen diese zerst&ouml;rt werden</li>
+                                <li> Ressourcen k&ouml;nnen ung&uuml;ltig werden</li>
+                                <li> Daher zus&auml;tzliche Sicherheit erforderlich</li>
+                        </ul>
+                <li> Gegenma&szlig;nahmen</li>
+                        <ul>
+                                <li> Abschnitte mit geteilten Ressourcen identifizieren: "kritische Abschnitte"</li>
+                                <li> Zugang zu kritischen Abschnitten sichern</li>
+                        </ul>
+                <li> Einige Mechanismen</li>
+                        <ul>
+                                <li> Mutex</li>
+                                <li> Semaphore</li>
+                                <li> Condition Variablen</li>
+                        </ul>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Mutex - Mutual Exclusion</h2></hgroup><article>
+
+        <ul>
+                <li> Mutex - <u>Mut</u>ual <u>Ex</u>clusion</li>
+                <li> Es gibt eine Lock Variable (gesetzt mittels atomic Operation z.B. <code>xchg</code>)</li>
+                <li> Um den kritischen Abschnitt zu betreten, braucht jeder Thread den Lock</li>
+                <li> Thread will Abschnitt betreten und Lock frei &rarr; Thread besetzt Lock</li>
+                <li> Lock nicht frei &rarr; Thread wird schlafen gelegt (bis Lock wieder frei)</li>
+                <li> Schlafende Threads &rarr; Sleepers Liste</li>
+                <li> Thread verl&auml;sst kritischen Abschnitt und gibt Lock frei (!) &rarr; schlafender Thread wird geweckt</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Semaphore</h2></hgroup><article>
+
+        <ul>
+                <li> Semaphore: Eigentlich Signalmasten bei Eisenbahnen</li>
+                <li> Es gibt eine Z&auml;hl-Variable, initialisiert mit $n$</li>
+                <li> Thread will Resource benutzen und Variable ist gr&ouml;&szlig;er <var>0</var> &rarr; Thread verringert Variable um 1</li>
+        <li> Variable ist <var>0</var> &rarr; Thread wird schlafen gelegt (bis Variable gr&ouml;&szlig;er <var>0</var>)</li>
+                <li> Schlafende Threads &rarr; Sleepers Liste</li>
+                <li> Thread braucht Resource nicht mehr und erh&ouml;ht Z&auml;hler um <var>1</var> (!) &rarr; schlafender Thread wird geweckt</li>
+        <li> Anwendungen: Producer/Consumer (Wieviele Items sind in der Queue), Zahlenm&auml;&szlig;ig beschr&auml;nkte Resource</li>
+        <li> Im Basis-SWEB nicht implementiert!</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Condition Variable</h2></hgroup><article>
+
+        <ul>
+                <li> Dienen der Prozesssynchronisation innerhalb eines kritischen Abschnitts</li>
+                <li> Kritischer Abschnitt ist wieder durch Mutex gesch&uuml;tzt</li>
+                <li> Im kritischen Abschnitt kann der Thread seine Arbeit nur fortsetzen wenn eine bestimmte Bedingung erf&uuml;llt ist</li>
+                <li> Thread wird schlafen gelegt bis Bedingung eintritt</li>
+                <li> Inzwischen kann ein anderer Thread den kritischen Abschnitt betreten</li>
+                <li> Wenn Condition eintritt, wird einer oder alle Threads informiert die auf diese warten</li>
+                <li> Pro Bedingung eigene Condition Variable erforderlich</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Condition Variable con't</h2></hgroup><article>
+        <ul>
+                <li> Wakeup- call - zwei Reaktionen m&ouml;glich:</li>
+                <ul>
+                        <li> Mesa Style: Schlafender Thread wartet, bis derjenige, der gerade im gesch&uuml;tzten Bereich ist, fertig ist.</li>
+                        <li> Hoare Style: Schlafender Thread beginnt sofort und der Aufweckende wird schlafen gelegt.</li>
+                </ul>
+                <li> Allgemein Mesa Style &uuml;blicher</li>
+                <li> Mutex und CV agieren Hand in Hand</li>
+                <li> Wakeup-Calls werden nicht gespeichert</li>
+        </ul>
+</article></slide>
+
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Assignment 1</h2>
+      <h3>Task 1 - Multithreading</h3>
+    </hgroup>
+  </slide>
+
+<slide>
+        <hgroup><h2>Multithreading</h2></hgroup><article>
+
+        <ul>
+                <li> Wir wollen unsere Prozesse multithreaded machen</li>
+                <li> Jeder Prozess hat eigenen virtuellen Adressraum</li>
+                <li> Mehrere Ausf&uuml;hrungsf&auml;den (Thread = Faden)</li>
+                <li> Beliebig viele (dh. nur durch Hardwarelimits beschr&auml;nkt) Threads</li>
+                <li> Vom Kernel verwaltet (einfacher als Verwaltung im Userspace)</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Multithreading Designentscheidungen</h2></hgroup><article>
+        <ul>
+                <li> Was passiert wenn der erste Thread beendet wird?</li>
+                <li> Wann werden Userspace und Loader aufger&auml;umt?</li>
+                <li> Wie wird erkannt, dass eine als Thread laufende Funktion returniert?</li>
+                <li> Wo Stacks platzieren?</li>
+                <li> Was passiert bei <code>fork</code>/<code>exec</code>?</li>
+        </ul>
+</article></slide>
+
+
+<slide>
+        <hgroup><h2>Multithreading in SWEB</h2></hgroup><article>
+
+        <ul>
+                <li> Derzeit pro <code>UserProcess</code> ein Kernel-Thread</li>
+                <li> Wir wollen mehrere Thread-Objekte (z.B. <code>UserThread</code>)</li>
+                <li> ... die sich dasselbe Page- Directory und den Loader teilen</li>
+                <li> Geteilte Resourcen geh&ouml;ren gesch&uuml;tzt!</li>
+                <li> Testprogramme bereitstellen (!)</li>
+        </ul> 
+</article></slide>
+
+
+<slide>
+        <hgroup><h2>Multithreading</h2></hgroup><article>
+
+        <ul>
+                <li> POSIX Thread Library</li>
+                <li> <code>man pthreads</code> (oder im www nach pthreads suchen)</li>
+                <li> Entscheiden, welche Syscalls sinnvoll sind</li>
+                <li> Mindestens zu implementieren:</li>
+                        <ul>
+                                <li> Thread erzeugen (<code>pthread_create</code>)</li>
+                                <li> Thread beenden (<code>pthread_exit</code>)</li>
+                                <li> Thread zwangsweise beenden (<code>pthread_cancel</code>)</li>
+                                <li> Warten auf Thread (<code>pthread_join</code>)</li>
+                        </ul>
+        </ul>
+</article></slide>
+
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Assignment 1</h2>
+      <h3>Task 2 - Fork</h3>
+    </hgroup>
+  </slide>
+
+<slide>
+        <hgroup><h2>System Call <code>SC_FORK</code></h2></hgroup><article>
+
+        <img src="images/fork.svg" width="80%" /><br /><br />
+        <ul>
+                <li> <code>pid_t fork(void);</code></li>
+                <li> erzeugt identes Abbild vom aufrufenden Prozess</li>
+                <li> wird ben&ouml;tigt um weitere Programme im Userspace zu starten</li>
+                <li> Returnwert:</li>
+                        <ul>
+                                <li> 0 f&uuml;r den Child-Prozess</li>
+                                <li> Prozess-ID des Childs f&uuml;r den erzeugenden Parent</li>
+                        </ul>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Fork Designentscheidungen</h2></hgroup><article>
+        <ul>
+                <li> Was passiert wenn es mehrere Threads gibt?</li>
+                <li> Was passiert mit benutzten Resourcen (Files, Mutexes, ...)?</li>
+                <li> Wie stellt man sicher, dass Kopiervorgang ''atomar'' ist?</li>
+        <li> Fortgeschrittene &Uuml;berlegung: K&ouml;nnen sich die Prozesse bestimmte Seiten nicht teilen? (insb. Code)</li>
+        </ul>
+</article></slide>
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Assignment 1</h2>
+      <h3>Weitere Tasks</h3>
+    </hgroup>
+  </slide>
+
+<slide>
+        <hgroup><h2>System Call <code>SC_EXEC</code></h2></hgroup><article>
+
+        <img src="images/exec.svg" width="70%" /><br /><br />
+        <ul>
+                <li> <code>int execv(const char *path, char *const argv[]);</code></li>
+                <li> ersetzt Image des aktuellen Prozesses durch Image in der mit <code>path</code></li>
+                        angegebenen Datei - siehe Klasse <code>Loader</code>
+                <li> wird mit <code>fork</code> verwendet, um Programme zu starten</li>
+                <li> R&uuml;ckgabewert nur relevant im Fehlerfall</li>
+        </ul>
+</article></slide>
+
+<slide>
+  <hgroup><h2>Anwendungsbeispiel fork/exec/waitpid</h2></hgroup>
+<article>
+<pre class="prettyprint">
+int child_status;
+
+int pid = fork();
+
+if(pid == 0) { // child process
+    exec("programm.sweb");
+} else if(pid > 0) { // parent process
+    waitpid(pid, &child_status, WEXITED);
+}
+</pre>
+</article>
+</slide>
+
+
+<slide>
+        <hgroup><h2>System Call <code>SC_EXEC</code> mit Parameter&uuml;bergabe</h2></hgroup><article>
+
+        <ul>
+                <li> <code>int execv(const char *path, char *const argv[]);</code></li>
+                <li> <code>argv</code> sollte an <code>main</code>-Funktion des neuen Executables &uuml;bergeben werden</li>
+        <li> Wohin legt man die Parameter?</li>
+        <li> Wie &uuml;bergibt man sie an <code>main</code>?</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>System Call <code>SC_WAITPID</code></h2></hgroup><article>
+
+        <code>pid_t waitpid(pid_t pid, int *status, int options);</code>
+        <ul>
+                <li> Wartet bis der Child-Process mit der angegebenen PID terminiert</li>
+                <li> N&ouml;tig f&uuml;r eine funktionierende Shell</li>
+                <li> R&uuml;ckgabewert des Prozesses wird auf die Adresse in <code>status</code></li>
+                        geschrieben
+        </ul>
+</article></slide>
+
+
+<slide>
+        <hgroup><h2>System Call <code>SC_SLEEP</code></h2></hgroup><article>
+
+        <ul>
+                <li> <code>unsigned sleep(unsigned seconds);</code></li>
+                <li> aufrufender Thread wird (mindestens) f&uuml;r die angegebene Zeit schlafen gelegt</li>
+                <li> Zeitangabe in Sekunden</li>
+                <li> soll m&ouml;glichst gut angen&auml;hert werden (!)</li>
+                <li> "einmal Aussetzen'' gen&uuml;gt sicher nicht</li>
+                <li> vgl. Live- Programming: Thread schl&auml;ft Anzahl an Ticks</li>
+        <li> Umsetzbar zB mittels TimeStampCounter oder RealTimeClock</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>System Call <code>SC_CLOCK</code></h2></hgroup><article>
+
+        <ul>
+                <li> <code>clock_t clock(void);</code></li>
+                <li> liefert Zeit, die der aufrufende Prozess seit Erzeugung auf CPU lief</li>
+                <li> Zeit in Clocks (siehe man-page)</li>
+                <li> bestm&ouml;gliche Ann&auml;herung (TimeStampCounter oder RealTimeClock)</li>
+                <li> vgl. <code>SC_SLEEP</code></li>
+        </ul>
+</article></slide>
+
+<slide>
+    <hgroup><h2>Resourcen-Verwaltung</h2></hgroup><article>
+        <ul>
+                <li> Jeder Prozess hat verschiedene Resourcen zur Verf&uuml;gung (File-Deskriptoren, Mutexes, Shared-Memory-Bereiche, ...)</li>
+        <li> Diese Resourcen m&uuml;ssen verwaltet werden (Threads d&uuml;rfen nur auf g&uuml;ltige Resourcen zugreifen k&ouml;nnen)</li>
+        <li> Diese Resourcen m&uuml;ssen gesch&uuml;tzt werden (Andere Prozesse d&uuml;rfen nicht ''einfach so'' auf die Resourcen zugreifen k&ouml;nnen)</li>
+        <li> Gute Basis-Implementierung erleichert Implementierung der anderen Tasks</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Filesystem Systemcalls</h2></hgroup><article>
+
+        <ul>
+                <li> Syscalls: <code>open</code>, <code>close</code>, <code>read</code>, <code>write</code> schon vorhanden</li>
+                <li> File-Descriptoren m&uuml;ssen pro Prozess vergeben werden (''Resourcen eines Prozesses'')</li>
+                <li> Zugriff auf "falsche''/nicht ge&ouml;ffnete FDs muss behandelt werden</li>
+                <li> bereits vorhandene FDs</li>
+                        <ul>
+                                <li> 0: stdout</li>
+                                <li> 1: stdin</li>
+                        </ul>
+        <li> Filesystem-Zugriff selbst ist schon implementiert, es fehlt ''nur'' die Verwaltung f&uuml;r verschiedene Prozesse</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Filesystem Systemcalls cont'd</h2></hgroup><article>
+
+        <ul>
+                <li> Am besten Dateien im Ordner <code>/user_progs</code> erstellen (kein eigener Mount n&ouml;tig). </li>
+                <li> F&uuml;rs Testen interessant: manueller Mount der Partition, z.B. im Linux-Terminal, <code>sweb-bin</code>-Ordner:<br />
+                        <code>mount SWEB-flat.vmdk -oloop,offset=10321920 &lt;ziel-ordner></code></li>
+    <li> Oder in newfs: <code>./utils/mount.sh</code></li>
+    <li> (Vorsicht bei Schreibzugriffen!)</li>
+        </ul>
+</article></slide>
+
+<slide>
+  <hgroup><h2>System Call SC_PIPE</h2></hgroup><article>
+
+  <ul>
+    <li> <code>int pipe(int filedes[2]);</code></li>
+    <li> Erzeugt zwei File-Deskriptoren</li>
+    <li> Was auf <code>fildes[1]</code> geschrieben wird, kann von <code>fildes[0]</code> gelesen werden</li>
+    <li> Wird zB von einer Shell f&uuml;r IO redirection ben&ouml;tigt</li>
+    <li> In diesem Zusammenhang: Wie k&ouml;nnen Prozesse File-Deskriptoren teilen, wenn sie das wollen? (!)</li>
+  </ul>
+</article></slide>
+
+<slide>
+  <hgroup><h2>System Call SC_ATEXIT</h2></hgroup><article>
+
+  <ul>
+  <li> <code>int atexit(void (*func)());</code></li>
+  <li> registriert Funktion <code>func</code>, die beim Beenden des Prozesses aufgerufen werden soll</li>
+  <li> Aufruf bei <code>exit</code> in umgekehrter Reihenfolge der Registrierung</li>
+  <li> Mindestens 32 Funktionen m&uuml;ssen registriert werden k&ouml;nnen</li>
+  <li> Wer f&uuml;hrt die Funktionen aus wenn schon alle Threads tot sind?</li>
+  </ul>
+</article></slide>
+
+<slide>
+  <hgroup><h2>System Call SC_SHUTDOWN</h2></hgroup><article>
+  <ul>
+    <li> F&auml;hrt das System kontrolliert hinunter</li>
+    <li> Alle Prozesse m&uuml;ssen beendet werden (ber&uuml;cksichtige auch <code>atexit</code>)</li>
+    <li> Schalte PC aus (ACPI)</li>
+  </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Semaphore</h2></hgroup><article>
+        <ul>
+                <li> Implementierung eines Standard-Semaphores</li>
+                <li> Verwendung der vorhandenen Mechanismen</li>
+                <li> z.B. <code>Mutex</code></li>
+        <li> Bereitstellung im Userspace mittels POSIX-Interface (<code>sem_init</code>, <code>sem_wait</code>, ...)</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Testprogramm f&uuml;r Semaphore</h2></hgroup><article>
+        <ul>
+                <li> Auswahl eines Standardproblems</li>
+        <li> Consumer-Producer (Gemeinsamer Buffer, auf den mehrere Threads zugreifen um zu lesen/schreiben)</li>
+        <li> Sleeping Barber (Kunden warten beim Fris&ouml;r auf Haarschnitt, Fris&ouml;r wartet auf Kunden, wenn keine da sind)</li>
+        <li> Dining Philosophers (Philosophen wollen etwas essen und warten auf Besteck)</li>
+        <li> Siehe zB Wikipedia f&uuml;r genauere Beschreibung</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Locks und Condition Variables</h2></hgroup><article>
+        <ul>
+                <li> Locks im Userspace zur Verf&uuml;gung stellen (Mutex)</li>
+                <li> Condition Variables im Userspace zur Verf&uuml;gung stellen</li>
+                <li> Wieder &uuml;ber POSIX-Interface </li>
+        <li> Testprogramme!</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>malloc/free</h2></hgroup><article>
+        <ul>
+                <li> Sinnvollerweise <b>keine</b> Systemcalls &rarr; reine Userspace-Implementierung</li>
+        <li> Heap-Verwaltung</li>
+        <li> Speichere freie/belegte Bl&ouml;cke in doppelt verketteten Listen</li>
+        <li> Wenn Speicher angefordert wird, suche einen passenden freien Block und markiere ihn als belegt</li>
+        <li> Wenn Speicher freigegeben wird, h&auml;nge den Block wieder in die Liste von freien Bl&ouml;cken</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>System Call brk/sbrk</h2></hgroup><article>
+        <ul>
+                <li> Setzen den ''break'', also das Ende des Heap</li>
+        <li> <code>brk</code> setzt den Break, <code>sbrk</code> erh&ouml;ht ihn um ein Inkrement</li>
+        <li> Typischerweise ist <code>brk</code> ein Systemcall, <code>sbrk</code> nur ein Wrapper</li>
+        <li> Wird von <code>malloc</code>/<code>free</code> ben&ouml;tigt, um Heap zu vergr&ouml;&szlig;ern/verkleinern</li>
+        <li> "Uberlegung: Wo soll der Heap &uuml;berhaupt liegen?</li>
+        <li> Wer k&uuml;mmert sich um das Mappen der Pages?</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Fortgeschrittene Themen</h2></hgroup><article>
+        <ul>
+                <li> Treiber f&uuml;r Maus, Sound, ...</li>
+        <li> Suspend to Disk</li>
+        <li> Besseres Filesystem (zB ext3)</li>
+        <li> Shared Memory</li>
+        <li> usw. (siehe LV-Homepage)</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Ich habe ganz andere Ideen!</h2></hgroup><article>
+        <ul>
+                <li> Mail an Tutor</li>
+                <li> Ungef&auml;hre max. Punkte </li>
+                <li> Ver&ouml;ffentlichung einer Liste mit allen Ideen und ungef&auml;hren max. Punkten</li>
+                <li> Unverbindlich: Ihr m&uuml;sst die Idee nicht umsetzen (Pflichtaufgaben sind wichtiger!)</li>
+        </ul>
+</article></slide>
+
+
+<slide>
+        <hgroup><h2>Bonus: Bug Reports</h2></hgroup><article>
+
+        <ul>
+                <li> BugReports bitte auf Sourceforge submitten <br /><a href="http://sweb.sourceforge.net/">http://sweb.sourceforge.net/</a></li>
+                <li> zuerst vorhandene BugReports checken</li>
+                <li> M&ouml;glichst ausf&uuml;hrliche Bug Beschreibungen</li>
+                <li> M&ouml;glichst kompakte Patches (!)</li>
+                <li> Tutor Bescheid geben</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Allgemeine Hinweise zur Abgabe</h2></hgroup><article>
+        <ul>
+                <li> Extrem langsame Performance der Abgabe kann zu Punkteabz&uuml;gen f&uuml;hren</li>
+                <li> Userspace-Programm, das Kernel zum Absturz bringt, bringt Punkteabz&uuml;ge</li>
+                <li> Interrupts/Scheduling disablen bringt Abz&uuml;ge! (au&szlig;er mit sehr guter Begr&uuml;ndung und Absprache mit Tutor)</li>
+        <li> Missachten der vorgegebenen Interfaces bringt Punkteabz&uuml;ge (beachtet das Stubs-File auf der LV-Homepage!)</li>
+        </ul>
+</article></slide>
+
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Abgabe</h2>
+      <h3>Designdokument</h3>
+    </hgroup>
+  </slide>
+
+
+<slide>
+        <hgroup><h2>Designdokument 1/3</h2></hgroup><article>
+
+        <ul>
+                <li> Ausgangslage, Ziele</li>
+                <li> Anforderungskatalog</li>
+                <li> Betroffene Module</li>
+                <li> L&ouml;sungskonzept</li>
+                <li> neue Klassen, Schnittstellendefinition</li>
+                <li> Ausf&uuml;hrliche Beschreibung</li>
+                        <ul>
+                                <li> z.B. Klassendiagramm, Sequenzdiagramm</li>
+                        </ul>
+                <li> Testf&auml;lle</li>
+        <li> Reine Wiederholung der Aufgabenstellung bringt Punkteabz&uuml;ge!</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Designdokument 2/3</h2></hgroup><article>
+
+        <ul>
+                <li> Auf den ersten beiden Seiten Executive Summary</li>
+                        <ul>
+                                <li> Kurze &Uuml;bersicht &uuml;ber die L&ouml;sung</li>
+                                <li> Details wie Funktionsnamen und R&uuml;ckgabewerte sind hier nicht erw&uuml;nscht.</li>
+                <li> Lesen des Executive Summary muss ausreichen, um das Design beurteilen zu k&ouml;nnen</li>
+                        </ul>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Designdokument 3/3</h2></hgroup><article>
+
+        <ul>
+                <li> F&uuml;r den Rest gibt es keine formalen Anforderungen</li>
+                <li> Design der Probleml&ouml;sung sollte klar ersichtlich sein</li>
+                <li> M&ouml;gliche Fehlersituationen beschreiben</li>
+                <li> L&ouml;sungsm&ouml;glichkeiten anbieten</li>
+                <li> Angabe der behandelten Fehlersituationen</li>
+                <li> Angabe der nicht behandelten Fehlersituationen (mit Begr&uuml;ndung!)</li>
+                <li> Angabe von Returnwerten im Fehlerfall!</li>
+                <li> Als PDF abzugeben</li>
+        </ul>
+</article></slide>
+
+ <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Abgabe</h2>
+      <h3>Abgabe</h3>
+    </hgroup>
+  </slide>
+  
+ <slide>
+        <hgroup><h2>Abgabefunktionalit&auml;t</h2></hgroup><article class="smaller">
+        <ul>
+                <li> <b>Ein</b> Repository f&uuml;r Designdokument <b>und</b> Implementation</li>
+                <li> Designdokument: <code>doc/Design_A1.pdf</code></li>
+        <li> Readme: <code>doc/Readme_A1.txt</code> oder <code>doc/Readme_A1.pdf</code></li>
+                <li> Abgabe erfolgt durch taggen und pushen der Abgabeversion</li>
+                        <ul>
+                                <li> Designdokument (<code>SubmissionD1</code>)</li>
+                                <li> Implementierung (<code>SubmissionI1</code>)</li>
+                        </ul>
+                <li> Abgabe:</li>
+                        <ul>
+                                <li> Pushen: <code>git push</code></li>
+                                <li> Taggen: <code>git tag <name></code></li>
+                                <li> Tag Pushen: <code>git push --tags</code> (!)</li>
+                                <li> Changeset-ID auslesen: <code>git show <name></code></li>
+                                <li> Mailen an <code>bs2013-abgaben@iaik.tugraz.at</code> und an den Tutor.</li>
+                                Betreff: <code>Submission Team <teamId> <tag> <changesetId></code>
+                                <li> siehe auch Lehrveranstaltungs-Homepage</li>
+                        </ul>
+        </ul>
+
+</article></slide>
+
+ <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>Abgabe</h2>
+      <h3>Schedule</h3>
+    </hgroup>
+  </slide>
+<slide>
+        <hgroup><h2>Abgabeschluss</h2></hgroup><article>
+        <ul>
+                <li> Designdokument:  31. Oktober 2013, 18:00 Uhr</li>
+                <li> Implementierung: 15. November 2013, 18:00 Uhr</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Designdiskussionen</h2></hgroup><article>
+
+        <ul>
+                <li> N&auml;chste Woche</li>
+                <li> Anwesenheitspflicht (!)</li>
+                <li> Sitzen in gro"sem Kreis zwecks Diskussionen</li>
+                <li> Keine Slides, keine Pr&auml;sentation, Skizzen/Zeichnungen an der Tafel</li>
+                <li> Alle Gruppenmitglieder sollten was zur Diskussion beitragen</li>
+                <li> Gemeinsames Besprechen der Aufgabenstellung und der Designs</li>
+                <li> Aufsp&uuml;ren von Schw&auml;chen im Design</li>
+                <li> Wiederholung der Aufgabenstellung gen&uuml;gt nicht</li>
+                <li> Sofortiges Feedback (Zettel und Stift mitnehmen!)</li>
+        </ul>
+</article></slide>
+
+<slide>
+        <hgroup><h2>Abgabegespr&auml;che</h2></hgroup><article>
+
+        <ul>
+                <li> Anwesenheitspflicht</li>
+                <li> Umfassende Kenntnisse der Gesamtl&ouml;sung</li>
+                <li> Von jedem Gruppenmitglied!</li>
+                <li> Jedes Gruppenmitglied muss auch "Anderungen am Code durchf&uuml;hren k&ouml;nnen!</li>
+                <li> Termine werden noch bekannt gegeben (Newsgroup)</li>
+        </ul>
+</article></slide>
+
+
+  
+  <slide class="thank-you-slide segue nobackground">
+    <aside class="gdbar right"><img src="images/sweb.jpg"></aside>
+    <article class="flexbox vleft auto-fadein">
+      <h2>Questions?</h2>
+    </article>
+    <p class="auto-fadein" data-config-contact>
+      <!-- populated from slide_config.json -->
+    </p>
+  </slide>
+  
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>

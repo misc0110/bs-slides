@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1169.8104"
+   height="367.73611"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="fork.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path3249"
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.80528455"
+     inkscape:cx="653.64583"
+     inkscape:cy="203.655"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1272"
+     inkscape:window-height="772"
+     inkscape:window-x="0"
+     inkscape:window-y="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(212.60549,-131.45397)">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4.30000019;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2383"
+       width="307.06155"
+       height="363.43613"
+       x="-9.9141932"
+       y="133.60397" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.79999995;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -8.2450379,177.79075 L 298.20464,177.79075"
+       id="path3155" />
+    <text
+       xml:space="preserve"
+       style="font-size:29.38948631px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="5.1648669"
+       y="162.11801"
+       id="text3157"><tspan
+         sodipodi:role="line"
+         id="tspan3159"
+         x="5.1648669"
+         y="162.11801">Process 1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:21.47512627px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-0.011631707"
+       y="200.59085"
+       id="text3161"><tspan
+         sodipodi:role="line"
+         id="tspan3163"
+         x="-0.011631707"
+         y="200.59085">int main(...)</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="227.43475"
+         id="tspan3165">{</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="254.27867"
+         id="tspan3175"
+         style="fill:#ff0000">   int forkedId;</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="281.12259"
+         style="fill:#ff0000"
+         id="tspan3227">   printf(&quot;Hello World&quot;);   </tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="307.96649"
+         id="tspan3173"
+         style="fill:#008000">   forkedId = fork();</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="334.81039"
+         id="tspan3177" /><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="361.6543"
+         id="tspan3203"
+         style="fill:#008000">   if(forkedId &gt; 0)</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="388.4982"
+         id="tspan3205"
+         style="fill:#008000">      printf(&quot;Hello from parent&quot;);</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="415.3421"
+         id="tspan3207"
+         style="fill:#008000">   else</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="442.18604"
+         id="tspan3201"
+         style="fill:#008000">      printf(&quot;Hello from child&quot;);</tspan><tspan
+         sodipodi:role="line"
+         x="-0.011631707"
+         y="469.02994"
+         id="tspan3167">}</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 161.43362,133.43235 L 161.43362,178.13705"
+       id="path3219" />
+    <text
+       xml:space="preserve"
+       style="font-size:28.05207825px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="170.33621"
+       y="162.1337"
+       id="text3221"><tspan
+         sodipodi:role="line"
+         id="tspan3223"
+         x="170.33621"
+         y="162.1337">test.sweb</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 44.704698,312.25113 L -28.561337,338.32887"
+       id="path3233"
+       sodipodi:nodetypes="cc" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path3235"
+       sodipodi:cx="343.3569"
+       sodipodi:cy="345.15875"
+       sodipodi:rx="97.481071"
+       sodipodi:ry="22.973246"
+       d="M 440.83797,345.15875 A 97.481071,22.973246 0 1 1 245.87583,345.15875 A 97.481071,22.973246 0 1 1 440.83797,345.15875 z"
+       transform="translate(-456.98132,11.791015)" />
+    <text
+       xml:space="preserve"
+       style="font-size:24.89188004px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-188.61298"
+       y="363.68207"
+       id="text3237"><tspan
+         sodipodi:role="line"
+         id="tspan3239"
+         x="-188.61298"
+         y="363.68207">forkedId == 2</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4.30000019;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4021"
+       width="307.06155"
+       height="364.67789"
+       x="498.74374"
+       y="133.63757" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 185.02777,303.55855 L 517.82939,303.55855"
+       id="path3241" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.79999995;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 500.41289,177.82433 L 806.86257,177.82433"
+       id="path4023" />
+    <text
+       xml:space="preserve"
+       style="font-size:29.38948631px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="513.82275"
+       y="162.15161"
+       id="text4025"><tspan
+         sodipodi:role="line"
+         id="tspan4027"
+         x="513.82275"
+         y="162.15161">Process 2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:21.47512627px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="508.6463"
+       y="200.62442"
+       id="text4029"><tspan
+         sodipodi:role="line"
+         id="tspan4031"
+         x="508.6463"
+         y="200.62442">int main(...)</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="227.46832"
+         id="tspan4033">{</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="254.31224"
+         id="tspan4035"
+         style="fill:#ff0000">   int forkedId;</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="281.15616"
+         style="fill:#ff0000"
+         id="tspan4037">   printf(&quot;Hello World&quot;);   </tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="308.00006"
+         id="tspan4039"
+         style="fill:#ff0000">   forkedId = fork();</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="334.84396"
+         id="tspan4041" /><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="361.68787"
+         id="tspan4043"
+         style="fill:#008000">   if(forkedId &gt; 0)</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="388.53177"
+         id="tspan4045"
+         style="fill:#008000">      printf(&quot;Hello from parent&quot;);</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="415.37567"
+         id="tspan4047"
+         style="fill:#008000">   else</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="442.2196"
+         id="tspan4049"
+         style="fill:#008000">      printf(&quot;Hello from child&quot;);</tspan><tspan
+         sodipodi:role="line"
+         x="508.6463"
+         y="469.06351"
+         id="tspan4051">}</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 670.09155,133.46593 L 670.09155,178.17063"
+       id="path4053" />
+    <text
+       xml:space="preserve"
+       style="font-size:28.05207825px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="678.99408"
+       y="162.1673"
+       id="text4055"><tspan
+         sodipodi:role="line"
+         id="tspan4057"
+         x="678.99408"
+         y="162.1673">test.sweb</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 553.36263,312.28471 L 755.77554,335.87886"
+       id="path4059"
+       sodipodi:nodetypes="cc" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#00ffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4061"
+       sodipodi:cx="343.3569"
+       sodipodi:cy="345.15875"
+       sodipodi:rx="97.481071"
+       sodipodi:ry="22.973246"
+       d="M 440.83797,345.15875 A 97.481071,22.973246 0 1 1 245.87583,345.15875 A 97.481071,22.973246 0 1 1 440.83797,345.15875 z"
+       transform="translate(514.86691,-8.04416)" />
+    <text
+       xml:space="preserve"
+       style="font-size:24.89188004px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="783.23523"
+       y="343.84692"
+       id="text4063"><tspan
+         sodipodi:role="line"
+         id="tspan4065"
+         x="783.23523"
+         y="343.84692">forkedId == 0</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28.00446701px;font-style:normal;font-weight:normal;fill:#000080;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="312.15961"
+       y="256.27054"
+       id="text4069"><tspan
+         sodipodi:role="line"
+         id="tspan4071"
+         x="312.15961"
+         y="256.27054">creates new </tspan><tspan
+         sodipodi:role="line"
+         x="312.15961"
+         y="291.27612"
+         id="tspan4073">process</tspan></text>
+  </g>
+</svg>
