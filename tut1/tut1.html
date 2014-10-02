@@ -9,7 +9,7 @@ URL: https://code.google.com/p/io-2012-slides
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tutorium #1</title>
+  <title>Tutorial #1</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
   <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
@@ -84,7 +84,7 @@ char const * user_progs [ ] = {
       <pre class="prettyprint" data-lang="main.cpp: 158ff">
 Scheduler::instance()->addNewThread(
   new MountMinixAndStartUserProgramsThread(
-    new FileSystemInfo(*root_fs_info), user_progs)
+    new FsWorkingDirectory(default_working_dir), user_progs )
 );
 // [ ... ]
 ArchInterrupts::enableInterrupts();
@@ -344,17 +344,21 @@ __syscall:
       </ul>
      <li>Kernelspace (architecture dependent): <code>arch/</code></li>
      <ul>
-       <li>x86 (default)</li>
-       <li>ARM (more infos at a special tutorium, tba)</li>
+       <li>x86/32 (default)</li>
+       <li>x86/32/pae, x86/64, ARM, ...
+       <ul>
+       <li>special tutorial on architecture independence: Friday <b>17. October, 14:00, i12</b></li>
+       </ul></li>
        <li>You can delete architectures you don't need - but bonus points if you don't and they still work</li>
      </ul>
   </ul>
+  Slides and regular tutorials from here on only x86/32!
  </article>
 </slide>
 
 <slide><hgroup><h2>Userspace/Kernelspace</h2></hgroup>
 <article>
-  <p>On execution: different contexts (x86/32)</p>
+  <p>Different execution contexts:</p>
     <ul>
     <li> CPU-register (<code>eax</code>, ...)</li>
     <li> Stack (<code>esp</code>, <code>ebp</code>)</li>
@@ -419,14 +423,16 @@ size_t Syscall::syscallException(size_t syscall_number, size_t arg1, ...
 
 <slide><hgroup><h2>Definition of syscalls</h2></hgroup>
   <article>
+  <p>
+  <b>TODO:</b>
   <ul>
-  <li> <b>TODO:</b></li>
   <ol>
     <li> Add new syscall number to <code>common/include/kernel/syscall-definition.h</code> </li>
     <li> Write syscall library function</li>
     <li> Add syscall handler to <code>Syscall::syscallException</code></li>
   </ol>
   </ul>
+  </div>
 </article></slide>
 
 <slide><hgroup><h2><code>Syscall::write</code></h2></hgroup><article>
@@ -483,7 +489,7 @@ int main()
   return 0;
 }</pre>
 <ul>
-<li> What does <code>return 0</code> (or end of function) do? Nothing special...</li>
+<li> What does <code>return 0</code> do (or end of function)? Nothing special...</li>
 </ul>
 </article></slide>
 
@@ -568,8 +574,8 @@ Thread::~Thread() {
 <slide>
 <hgroup><h2>Live Programming</h2></hgroup><article>
 <ul>
-<li> Live Programming TBA</li>
-<li> Good evaluation, seems to be sensible</li>
+<li> Live Programming: <b>10. October 2014, 14:00, i12</b></li>
+<li> Good evaluation, seems to be useful</li>
 <li> We implement a syscall</li>
 </ul>
 </article></slide>

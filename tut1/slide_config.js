@@ -26,8 +26,11 @@ var SLIDE_CONFIG = {
     company: 'IAIK',
     //gplus: 'http://plus.google.com/1234567890',
     //twitter: '@yourhandle',
-    www: 'https://swebwiki.student.iaik.tugraz.at/bs/entrypage',
-    github: 'https://github.com/IAIK/sweb'
+    www: 'https://swebwiki.student.iaik.tugraz.at',
+    irc: 'irc://irc.at.euirc.net/bs',
+    newsgroup: 'news://news.tugraz.at:119/tu-graz.lv.bs.sweb',
+    email: 'bs-helpline@iaik.tugraz.at',
+    //github: 'https://github.com/IAIK/sweb'
   }/*, {
     name: 'Second Name',
     company: 'Job Title, Google',
