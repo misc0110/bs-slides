@@ -1,0 +1,90 @@
+<!--
+Google IO 2012/2013 HTML5 Slide Template
+
+Authors: Eric Bidelman <ebidel@gmail.com>
+         Luke Mahé <lukem@google.com>
+
+URL: https://code.google.com/p/io-2012-slides
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tutorial #1</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="all" href="theme/css/tugraz.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+  <script src="js/paging.js"></script>
+</head>
+<body style="opacity: 0" onload="Paging.addressChange();">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+    <aside class="gdbar"><img src="images/sweb.jpg"></aside>
+    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+    </hgroup>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <hgroup class="auto-fadein">
+      <h2>x86 Paging</h2>
+    </hgroup>
+  </slide>
+  
+  
+  <slide >
+    <hgroup>
+      <h2>Paging Overview</h2>
+    </hgroup>
+    <article class="smaller">
+      <ul>
+        <li>Address: <input type="text" id="addr" value="0x12345678" onkeyup="Paging.addressChange();" style="font-family: 'Courier New',Courier, monospace; font-size: 16pt;"/></li>
+        <li id="addr_bin"></li>
+      </ul>
+      <canvas id="tables" width="800" height="450" />
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Paging</h2>
+    </hgroup>
+    <article class="smaller">
+      <ul>
+        <li>Address: <input type="text" id="addr1" value="0x12345678" onkeyup="PagingDetail.addressChange();" style="font-family: 'Courier New',Courier, monospace; font-size: 16pt;"/> <button onclick="PagingDetail.resolve();">resolve address</button></li>
+        <li id="addr_bin1"></li>
+      </ul>
+      <button style="display: block; position: absolute; right: 80px; bottom: 100px; display: none;" id="goto_pt" onclick="PagingDetail.resolve2();">go to page table &raquo;</button>
+      
+      <button style="display: block; position: absolute; left: 100px; bottom: 100px; display: none;" id="goto_pd" onclick="PagingDetail.resolve(false);">&laquo; go to page directory</button>
+      <button style="display: block; position: absolute; right: 80px; bottom: 100px; display: none;" id="goto_p" onclick="PagingDetail.resolve3();">go to page &raquo;</button>
+      
+      <button style="display: block; position: absolute; left: 100px; bottom: 100px; display: none;" id="goto_pt1" onclick="PagingDetail.resolve2();">&laquo; go to page table</button>
+      
+      <canvas id="tab1" width="800" height="450" />
+    </article>
+  </slide>
+  
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>
