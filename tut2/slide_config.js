@@ -1,8 +1,8 @@
 var SLIDE_CONFIG = {
   // Slide settings
   settings: {
-    title: 'BS Tutorium',
-    subtitle: 'Tutorium #2',
+    title: 'BS Tutorial',
+    subtitle: 'Tutorial #2',
     //eventInfo: {
     //  title: 'Google I/O',
     //  date: '6/x/2013'
@@ -22,7 +22,7 @@ var SLIDE_CONFIG = {
 
   // Author information
   presenters: [{
-    name: 'SWEB Tutoren',
+    name: 'SWEB Tutors',
     company: 'IAIK',
     //gplus: 'http://plus.google.com/1234567890',
     //twitter: '@yourhandle',

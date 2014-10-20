@@ -1224,6 +1224,8 @@ article.smaller q:before, article.smaller q:after {
 .segue h2 {
   color: #e6e6e6;
   font-size: 60px;
+  line-height: 65px;
+
 }
 /* line 816, ../scss/default.scss */
 .segue h3 {
